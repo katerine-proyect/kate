@@ -1,0 +1,130 @@
+<div class="space-y-6 animate-fade-in">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestión de Usuarios</h1>
+      <p class="text-gray-500 dark:text-gray-400">
+        Administra el personal y sus permisos de acceso.
+      </p>
+    </div>
+    <button
+      (click)="openCreateForm()"
+      class="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all shadow-sm shadow-primary/20"
+    >
+      <span class="text-lg">+</span>
+      Nuevo Usuario
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <div
+      class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-sm"
+    >
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <div
+    class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
+  >
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="bg-gray-50 dark:bg-gray-800/50">
+            <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Usuario
+            </th>
+            <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Nombre Completo
+            </th>
+            <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Contacto
+            </th>
+            <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Estado
+            </th>
+            <th
+              class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right"
+            >
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          @for (user of users(); track user.id) {
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs"
+                  >
+                    {{ user.username.substring(0, 2).toUpperCase() }}
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+                      user.username
+                    }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                {{ user.nombre }} {{ user.apellido }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                {{ user.telefono || 'N/A' }}
+              </td>
+              <td class="px-6 py-4">
+                <span
+                  class="px-2 py-1 text-xs font-medium rounded-full"
+                  [ngClass]="{
+                    'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400':
+                      user.is_active,
+                    'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400': !user.is_active,
+                  }"
+                >
+                  {{ user.is_active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex justify-end gap-2">
+                  <button
+                    (click)="toggleStatus(user.id)"
+                    class="p-2 text-gray-400 hover:text-primary transition-colors"
+                    title="Cambiar Estado"
+                  >
+                    ⇄
+                  </button>
+                  <button
+                    (click)="openEditForm(user)"
+                    class="p-2 text-gray-400 hover:text-primary transition-colors"
+                    title="Editar"
+                  >
+                    ✎
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            @if (!isLoading()) {
+              <tr>
+                <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                  No se encontraron usuarios.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (isLoading()) {
+      <div class="flex justify-center py-10">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    }
+  </div>
+
+  @if (isFormOpen()) {
+    <app-user-form [user]="selectedUser()" (closed)="handleFormClosed($event)"></app-user-form>
+  }
+</div>

@@ -1,0 +1,104 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1
+      class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400"
+    >
+      Catálogo de Productos
+    </h1>
+    <button
+      class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-500 transition-colors shadow-sm"
+    >
+      Añadir Producto
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    @if (isLoading()) {
+      <div class="col-span-full flex justify-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="col-span-full text-center py-12 text-red-600">
+        {{ errorMessage() }}
+      </div>
+    } @else if (products().length === 0) {
+      <div class="col-span-full text-center py-12 text-gray-500">No hay productos disponibles.</div>
+    } @else {
+      @for (product of products(); track product.id) {
+        <div
+          class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-shadow duration-300"
+          [class.opacity-50]="!product.activo"
+        >
+          <div class="h-48 bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative">
+            @if (!product.activo) {
+              <span
+                class="absolute top-2 right-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded"
+                >Inactivo</span
+              >
+            }
+            <svg
+              class="w-12 h-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex justify-between items-start">
+              <h3 class="font-semibold text-gray-900 dark:text-white line-clamp-1">
+                {{ product.nombre }}
+              </h3>
+              <span
+                class="text-sm px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full"
+              >
+                {{ product.categoria_nombre || 'Sin categoría' }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-gray-500 dark:text-gray-400"
+                >Stock: {{ product.stock_actual }}</span
+              >
+              <span class="text-lg font-bold text-gray-900 dark:text-white">{{
+                product.precio | currency
+              }}</span>
+            </div>
+            <div class="flex gap-2">
+              <button
+                class="flex-1 mt-2 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                Editar
+              </button>
+              @if (product.activo) {
+                <button
+                  (click)="deleteProduct(product.id)"
+                  class="mt-2 p-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  title="Desactivar"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

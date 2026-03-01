@@ -54,6 +54,22 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
-## Additional Resources
+## Deployment on Vercel
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+If you deploy this application to Vercel, you might encounter a `NOT_FOUND` error when refreshing segments of the application (e.g., at `/categories` or `/products`).
+
+### Troubleshooting NOT_FOUND Error
+
+1.  **Output Directory**: In the Vercel Dashboard, ensure the **Output Directory** is set to `dist/kate/browser` (mandatory for Angular 18+ projects using the application builder).
+2.  **SPA Routing**: The `vercel.json` file in the root directory ensures that all requests are rewritten to `index.html`. This allows the Angular Router to handle deep links correctly.
+
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
+
+### Key Concept: Client-side Routing
+Angular uses client-side routing. The server (Vercel) only hosts static files. When you navigate to a sub-route, Angular's JS handles it. If you refresh the page, the browser asks the server for that specific path. The rewrite rule tells the server to always serve the `index.html` regardless of the path.

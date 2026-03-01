@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ThemeToggleComponent],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  styleUrls: ['./login.component.css'],
   host: {
     class: 'flex-1 flex flex-col',
   },
@@ -26,6 +27,13 @@ export class LoginComponent {
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
+
+  ngOnInit(): void {
+    const theme = localStorage.getItem('kate-theme-preference');
+    localStorage.clear();
+    localStorage.setItem('kate-theme-preference', theme || 'light');
+    this.loginForm.reset();
+  }
 
   onSubmit(): void {
     if (this.loginForm.valid) {

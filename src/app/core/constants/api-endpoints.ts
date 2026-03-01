@@ -22,6 +22,11 @@ export const API_ENDPOINTS = {
     DETAIL: (id: number) => `${API_BASE_URL}/pedidos/${id}/`,
     STATS: `${API_BASE_URL}/pedidos/stats/`,
   },
+  CATEGORIES: {
+    BASE: `${API_BASE_URL}/productos/categorias/`,
+    DETAIL: (id: number) => `${API_BASE_URL}/productos/categorias/${id}/`,
+    DELETE: (id: number) => `${API_BASE_URL}/productos/categorias/${id}/eliminar/`,
+  },
   USERS: {
     BASE: `${API_BASE_URL}/usuarios/`,
     LIST: `${API_BASE_URL}/usuarios/listar/`,

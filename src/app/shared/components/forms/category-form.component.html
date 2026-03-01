@@ -1,0 +1,52 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+  <div class="form-group">
+    <label for="nombre" class="form-label">Nombre de la Categoría *</label>
+    <input
+      id="nombre"
+      type="text"
+      formControlName="nombre"
+      class="form-input"
+      [class.form-input-error]="isFieldInvalid('nombre')"
+      placeholder="Ej: Electrónica"
+    />
+    @if (isFieldInvalid('nombre')) {
+      <span class="form-error">{{ getErrorMessage('nombre') }}</span>
+    }
+  </div>
+
+  <div class="form-group">
+    <label for="descripcion" class="form-label">Descripción</label>
+    <textarea
+      id="descripcion"
+      formControlName="descripcion"
+      class="form-input form-textarea"
+      [class.form-input-error]="isFieldInvalid('descripcion')"
+      placeholder="Descripción de la categoría"
+      rows="3"
+    ></textarea>
+    @if (isFieldInvalid('descripcion')) {
+      <span class="form-error">{{ getErrorMessage('descripcion') }}</span>
+    }
+  </div>
+
+  @if (isEditMode) {
+    <div class="form-group form-checkbox">
+      <input id="activo" type="checkbox" formControlName="activo" class="form-checkbox-input" />
+      <label for="activo" class="form-checkbox-label"> Categoría activa </label>
+    </div>
+  }
+
+  <div class="form-actions">
+    <button type="button" (click)="cancel()" class="btn btn-secondary" [disabled]="isSubmitting()">
+      Cancelar
+    </button>
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isSubmitting()">
+      @if (isSubmitting()) {
+        <span class="spinner"></span>
+        Guardando...
+      } @else {
+        {{ isEditMode ? 'Actualizar' : 'Crear' }} Categoría
+      }
+    </button>
+  </div>
+</form>

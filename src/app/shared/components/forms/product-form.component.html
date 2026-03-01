@@ -1,0 +1,119 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+  <div class="form-group">
+    <label for="nombre" class="form-label">Nombre del Producto *</label>
+    <input
+      id="nombre"
+      type="text"
+      formControlName="nombre"
+      class="form-input"
+      [class.form-input-error]="isFieldInvalid('nombre')"
+      placeholder="Ej: Laptop Dell"
+    />
+    @if (isFieldInvalid('nombre')) {
+      <span class="form-error">{{ getErrorMessage('nombre') }}</span>
+    }
+  </div>
+
+  <div class="form-group">
+    <label for="descripcion" class="form-label">Descripción</label>
+    <textarea
+      id="descripcion"
+      formControlName="descripcion"
+      class="form-input form-textarea"
+      [class.form-input-error]="isFieldInvalid('descripcion')"
+      placeholder="Descripción del producto"
+      rows="3"
+    ></textarea>
+    @if (isFieldInvalid('descripcion')) {
+      <span class="form-error">{{ getErrorMessage('descripcion') }}</span>
+    }
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="precio" class="form-label">Precio *</label>
+      <input
+        id="precio"
+        type="number"
+        formControlName="precio"
+        class="form-input"
+        [class.form-input-error]="isFieldInvalid('precio')"
+        placeholder="0.00"
+        step="0.01"
+        min="0"
+      />
+      @if (isFieldInvalid('precio')) {
+        <span class="form-error">{{ getErrorMessage('precio') }}</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="stock_actual" class="form-label">Stock *</label>
+      <input
+        id="stock_actual"
+        type="number"
+        formControlName="stock_actual"
+        class="form-input"
+        [class.form-input-error]="isFieldInvalid('stock_actual')"
+        placeholder="0"
+        min="0"
+      />
+      @if (isFieldInvalid('stock_actual')) {
+        <span class="form-error">{{ getErrorMessage('stock_actual') }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="categoria_id" class="form-label">Categoría *</label>
+    <select
+      id="categoria_id"
+      formControlName="categoria_id"
+      class="form-input"
+      [class.form-input-error]="isFieldInvalid('categoria_id')"
+    >
+      <option value="">Seleccionar categoría</option>
+      @for (cat of categories(); track cat.id) {
+        <option [value]="cat.id">{{ cat.nombre }}</option>
+      }
+    </select>
+    @if (isFieldInvalid('categoria_id')) {
+      <span class="form-error">{{ getErrorMessage('categoria_id') }}</span>
+    }
+  </div>
+
+  <div class="form-group form-checkbox">
+    <input
+      id="lleva_inventario"
+      type="checkbox"
+      formControlName="lleva_inventario"
+      class="form-checkbox-input"
+    />
+    <label for="lleva_inventario" class="form-checkbox-label">
+      Llevar control de inventario
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button
+      type="button"
+      (click)="cancel()"
+      class="btn btn-secondary"
+      [disabled]="isSubmitting()"
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="form.invalid || isSubmitting()"
+    >
+      @if (isSubmitting()) {
+        <span class="spinner"></span>
+        Guardando...
+      } @else {
+        {{ isEditMode ? 'Actualizar' : 'Crear' }} Producto
+      }
+    </button>
+  </div>
+</form>

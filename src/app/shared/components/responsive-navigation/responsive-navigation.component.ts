@@ -1,8 +1,9 @@
-import { Component, Input, computed, inject, signal } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointService } from '../../../core/services/breakpoint.service';
+import { LayoutService } from '../../../core/services/layout.service';
 import { NavigationItem } from '../../../core/models/responsive.models';
 
 @Component({
@@ -14,17 +15,19 @@ import { NavigationItem } from '../../../core/models/responsive.models';
 })
 export class ResponsiveNavigationComponent {
   @Input() items: NavigationItem[] = [];
+  @Input() userName: string = '';
 
+  private layoutService = inject(LayoutService);
   private breakpointService = inject(BreakpointService);
 
   isMobile = toSignal(this.breakpointService.isMobile$);
-  isMenuOpen = signal(false);
+  isMenuOpen = this.layoutService.isMenuOpen;
 
   toggleMenu(): void {
-    this.isMenuOpen.update((open) => !open);
+    this.layoutService.toggleMenu();
   }
 
   closeMenu(): void {
-    this.isMenuOpen.set(false);
+    this.layoutService.closeMenu();
   }
 }

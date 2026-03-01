@@ -1,0 +1,9 @@
+.main-content-shifted {
+  margin-left: 240px;
+}
+
+@media (max-width: 767px) {
+  .main-content-shifted {
+    margin-left: 0;
+  }
+}

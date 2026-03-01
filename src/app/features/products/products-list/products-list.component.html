@@ -6,6 +6,7 @@
       Catálogo de Productos
     </h1>
     <button
+      (click)="onAddProduct()"
       class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-500 transition-colors shadow-sm"
     >
       Añadir Producto
@@ -71,6 +72,7 @@
             </div>
             <div class="flex gap-2">
               <button
+                (click)="onEditProduct(product)"
                 class="flex-1 mt-2 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 Editar
@@ -102,3 +104,26 @@
     }
   </div>
 </div>
+
+@if (modalIsOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in" (click)="closeModal()">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto animate-slide-up" (click)="$event.stopPropagation()">
+      <div class="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ modalTitle() }}</h2>
+        <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-6">
+        <app-product-form
+          [product]="selectedProduct()"
+          [isEditMode]="isEditMode()"
+          (onSubmit)="onProductFormSubmit($event)"
+          (onCancel)="onFormCancel()"
+        ></app-product-form>
+      </div>
+    </div>
+  </div>
+}

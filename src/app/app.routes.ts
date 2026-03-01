@@ -4,6 +4,7 @@ import { ProductsListComponent } from './features/products/products-list/product
 import { SalesDashboardComponent } from './features/sales/sales-dashboard/sales-dashboard.component';
 import { ClientsListComponent } from './features/clients/clients-list/clients-list.component';
 import { UsersListComponent } from './features/users/users-list/users-list.component';
+import { CategoriesListComponent } from './features/categories/categories-list/categories-list.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -29,6 +30,11 @@ export const routes: Routes = [
   {
     path: 'users',
     component: UsersListComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'categories',
+    component: CategoriesListComponent,
     canActivate: [authGuard],
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },

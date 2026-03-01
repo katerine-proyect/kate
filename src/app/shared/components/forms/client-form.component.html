@@ -1,0 +1,101 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+  <div class="form-group">
+    <label for="nombre_local" class="form-label">Nombre del Local *</label>
+    <input
+      id="nombre_local"
+      type="text"
+      formControlName="nombre_local"
+      class="form-input"
+      [class.form-input-error]="isFieldInvalid('nombre_local')"
+      placeholder="Ej: Tienda Centro"
+    />
+    @if (isFieldInvalid('nombre_local')) {
+      <span class="form-error">{{ getErrorMessage('nombre_local') }}</span>
+    }
+  </div>
+
+  <div class="form-group">
+    <label for="nombre_contacto" class="form-label">Nombre de Contacto *</label>
+    <input
+      id="nombre_contacto"
+      type="text"
+      formControlName="nombre_contacto"
+      class="form-input"
+      [class.form-input-error]="isFieldInvalid('nombre_contacto')"
+      placeholder="Ej: Juan Pérez"
+    />
+    @if (isFieldInvalid('nombre_contacto')) {
+      <span class="form-error">{{ getErrorMessage('nombre_contacto') }}</span>
+    }
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="email_contacto" class="form-label">Email *</label>
+      <input
+        id="email_contacto"
+        type="email"
+        formControlName="email_contacto"
+        class="form-input"
+        [class.form-input-error]="isFieldInvalid('email_contacto')"
+        placeholder="correo@ejemplo.com"
+      />
+      @if (isFieldInvalid('email_contacto')) {
+        <span class="form-error">{{ getErrorMessage('email_contacto') }}</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="telefono_contacto" class="form-label">Teléfono *</label>
+      <input
+        id="telefono_contacto"
+        type="tel"
+        formControlName="telefono_contacto"
+        class="form-input"
+        [class.form-input-error]="isFieldInvalid('telefono_contacto')"
+        placeholder="+1 (555) 123-4567"
+      />
+      @if (isFieldInvalid('telefono_contacto')) {
+        <span class="form-error">{{ getErrorMessage('telefono_contacto') }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="direccion_local" class="form-label">Dirección *</label>
+    <input
+      id="direccion_local"
+      type="text"
+      formControlName="direccion_local"
+      class="form-input"
+      [class.form-input-error]="isFieldInvalid('direccion_local')"
+      placeholder="Calle Principal 123, Apt 4B"
+    />
+    @if (isFieldInvalid('direccion_local')) {
+      <span class="form-error">{{ getErrorMessage('direccion_local') }}</span>
+    }
+  </div>
+
+  <div class="form-actions">
+    <button
+      type="button"
+      (click)="cancel()"
+      class="btn btn-secondary"
+      [disabled]="isSubmitting()"
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="form.invalid || isSubmitting()"
+    >
+      @if (isSubmitting()) {
+        <span class="spinner"></span>
+        Guardando...
+      } @else {
+        {{ isEditMode ? 'Actualizar' : 'Crear' }} Cliente
+      }
+    </button>
+  </div>
+</form>

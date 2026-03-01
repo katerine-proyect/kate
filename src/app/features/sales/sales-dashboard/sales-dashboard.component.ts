@@ -5,15 +5,20 @@ import { ClientService } from '../../../core/services/client.service';
 import { Order } from '../../../core/models/order.model';
 import { ApiResponse } from '../../../core/models/product.model';
 
+import { SaleFormComponent } from '../sale-form/sale-form.component';
+
+import { PdfExportService } from '../../../core/services/pdf-export.service';
+
 @Component({
   selector: 'app-sales-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SaleFormComponent],
   templateUrl: './sales-dashboard.component.html',
   styleUrl: './sales-dashboard.component.css',
 })
 export class SalesDashboardComponent implements OnInit {
   private saleService = inject(SaleService);
+  private pdfService = inject(PdfExportService);
   
   recentSales = signal<Order[]>([]);
   currentPage = signal(1);
@@ -27,6 +32,7 @@ export class SalesDashboardComponent implements OnInit {
   });
   
   isLoading = signal(false);
+  showSaleForm = signal(false);
   errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
@@ -48,6 +54,38 @@ export class SalesDashboardComponent implements OnInit {
       },
       error: () => this.handleError()
     });
+  }
+
+  openSaleForm(): void {
+    this.showSaleForm.set(true);
+  }
+
+  onSaleFormClosed(success: boolean): void {
+    this.showSaleForm.set(false);
+    if (success) {
+      this.loadDashboardData();
+    }
+  }
+
+  downloadPDF(sale: Order): void {
+    if (!sale.items) {
+      // If items not loaded, fetch detail
+      this.isLoading.set(true);
+      this.saleService.getSale(sale.id!).subscribe({
+        next: (response) => {
+          if (response.status === 200) {
+            this.pdfService.exportOrderInvoice(response.data);
+          }
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.errorMessage.set('Error al cargar detalle para PDF');
+          this.isLoading.set(false);
+        }
+      });
+    } else {
+      this.pdfService.exportOrderInvoice(sale);
+    }
   }
 
   loadSales(): void {

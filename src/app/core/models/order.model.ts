@@ -10,13 +10,20 @@ export interface OrderItem {
 export interface Order {
   id?: number;
   numero_pedido: string;
-  cliente_id?: number;
-  cliente?: string;
+  cliente?: 
+  {
+    id?: string;
+    nombre?: string;
+    apellido?: string;
+    telefono?: string;
+    email?: string;
+    direccion?: string;
+  };
   vendedor?: string;
   total: number;
   estado: string;
   notas?: string;
-  direccion_envio: string;
+  direccion_envio?: string;
   fecha_creacion?: string;
   items?: OrderItem[];
 }

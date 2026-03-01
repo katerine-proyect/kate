@@ -1,0 +1,178 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+>
+  <div
+    class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-scale-in"
+  >
+    <!-- Header -->
+    <div
+      class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/20"
+    >
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white">Nueva Venta</h2>
+      <button
+        (click)="close()"
+        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+      >
+        ✕
+      </button>
+    </div>
+
+    <form
+      [formGroup]="saleForm"
+      (ngSubmit)="onSubmit()"
+      class="flex-1 overflow-y-auto p-6 space-y-6"
+    >
+      @if (errorMessage()) {
+        <div
+          class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-xs"
+        >
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Client and Info Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+            >Cliente</label
+          >
+          <select
+            formControlName="cliente_id"
+            class="w-full px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white text-sm"
+          >
+            <option [ngValue]="null">Venta Directa</option>
+            @for (client of clients(); track client.id) {
+              <option [ngValue]="client.id">{{ client.nombre_local }}</option>
+            }
+          </select>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+            >Dirección de Envío (Opcional)</label
+          >
+          <input
+            formControlName="direccion_envio"
+            type="text"
+            placeholder="Calle..."
+            class="w-full px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white text-sm"
+          />
+        </div>
+      </div>
+
+      <!-- Items Section -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+            >Productos</label
+          >
+          <button
+            type="button"
+            (click)="addItem()"
+            class="text-xs text-primary font-bold hover:underline"
+          >
+            + Añadir Producto
+          </button>
+        </div>
+
+        <div formArrayName="items" class="space-y-3">
+          @for (item of items.controls; track $index) {
+            <div
+              [formGroupName]="$index"
+              class="p-4 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl border border-gray-100 dark:border-gray-800 flex gap-3 items-end"
+            >
+              <div class="flex-1 space-y-1">
+                <label class="text-[10px] text-gray-400 uppercase">Producto</label>
+                <select
+                  formControlName="producto_id"
+                  (change)="onProductChange($index)"
+                  class="w-full px-3 py-1.5 rounded-lg border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800 outline-none focus:border-primary text-sm dark:text-white"
+                >
+                  <option [ngValue]="null" disabled>Seleccionar...</option>
+                  @for (prod of products(); track prod.id) {
+                    <option [ngValue]="prod.id">
+                      {{ prod.nombre }} (Stock: {{ prod.stock_actual }})
+                    </option>
+                  }
+                </select>
+              </div>
+
+              <div class="w-20 space-y-1">
+                <label class="text-[10px] text-gray-400 uppercase">Cant.</label>
+                <input
+                  formControlName="cantidad"
+                  type="number"
+                  min="1"
+                  [max]="item.get('stock_max')?.value"
+                  class="w-full px-3 py-1.5 rounded-lg border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800 outline-none focus:border-primary text-sm dark:text-white"
+                />
+              </div>
+
+              <div class="w-28 space-y-1">
+                <label class="text-[10px] text-gray-400 uppercase">Precio</label>
+                <div class="relative">
+                  <span class="absolute left-2 top-1.5 text-gray-400 text-sm">$</span>
+                  <input
+                    formControlName="precio_unitario"
+                    type="number"
+                    step="0.01"
+                    class="w-full pl-6 pr-3 py-1.5 rounded-lg border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800 outline-none focus:border-primary text-sm dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                (click)="removeItem($index)"
+                class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Notas</label>
+        <textarea
+          formControlName="notas"
+          rows="2"
+          class="w-full px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white text-sm"
+          placeholder="Opcional..."
+        ></textarea>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <div
+      class="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/20"
+    >
+      <div class="text-right">
+        <p class="text-xs text-gray-500 uppercase font-semibold">Total a Pagar</p>
+        <p class="text-2xl font-black text-gray-900 dark:text-white">{{ getTotal() | currency }}</p>
+      </div>
+      <div class="flex gap-3">
+        <button
+          type="button"
+          (click)="close()"
+          class="px-6 py-2 border border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium text-sm"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          (click)="onSubmit()"
+          [disabled]="isSubmitting() || saleForm.invalid"
+          class="px-8 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 font-bold text-sm flex items-center gap-2 disabled:opacity-50"
+        >
+          @if (isSubmitting()) {
+            <div
+              class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+            ></div>
+          }
+          Registrar Venta
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

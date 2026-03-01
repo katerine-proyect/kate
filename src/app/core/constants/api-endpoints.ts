@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
   SALES: {
     BASE: `${API_BASE_URL}/pedidos/`,
     DETAIL: (id: number) => `${API_BASE_URL}/pedidos/${id}/`,
+    UPDATE: (id: number) => `${API_BASE_URL}/pedidos/${id}/`,
     STATS: `${API_BASE_URL}/pedidos/stats/`,
   },
   CATEGORIES: {

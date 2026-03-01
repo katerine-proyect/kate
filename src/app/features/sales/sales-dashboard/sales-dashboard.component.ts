@@ -34,6 +34,7 @@ export class SalesDashboardComponent implements OnInit {
   isLoading = signal(false);
   showSaleForm = signal(false);
   errorMessage = signal<string | null>(null);
+  selectedSaleId = signal<number | null>(null);
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -58,10 +59,17 @@ export class SalesDashboardComponent implements OnInit {
 
   openSaleForm(): void {
     this.showSaleForm.set(true);
+    this.selectedSaleId.set(null);
+  }
+
+  openEditModal(id: number): void {
+    this.selectedSaleId.set(id);
+    this.showSaleForm.set(true);
   }
 
   onSaleFormClosed(success: boolean): void {
     this.showSaleForm.set(false);
+    this.selectedSaleId.set(null);
     if (success) {
       this.loadDashboardData();
     }

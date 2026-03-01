@@ -30,4 +30,8 @@ export class SaleService {
   createSale(order: Order): Observable<ApiResponse<number>> {
     return this.http.post<ApiResponse<number>>(API_ENDPOINTS.SALES.BASE, order);
   }
+
+  updateSale(id: number, order: any): Observable<ApiResponse<number>> {
+    return this.http.patch<ApiResponse<number>>(API_ENDPOINTS.SALES.UPDATE(id), order);
+  }
 }

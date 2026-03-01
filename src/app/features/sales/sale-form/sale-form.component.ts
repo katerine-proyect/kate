@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, inject, signal, computed } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, Input, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SaleService } from '../../../core/services/sale.service';
@@ -21,6 +21,7 @@ export class SaleFormComponent implements OnInit {
   private productService = inject(ProductService);
   private clientService = inject(ClientService);
 
+  @Input() saleId: number | null = null;
   @Output() closed = new EventEmitter<boolean>();
 
   saleForm: FormGroup;
@@ -34,6 +35,7 @@ export class SaleFormComponent implements OnInit {
       cliente_id: [null],
       direccion_envio: [''],
       notas: [''],
+      estado: [null],
       items: this.fb.array([], Validators.required)
     });
   }
@@ -41,7 +43,45 @@ export class SaleFormComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
     this.loadClients();
-    this.addItem(); // Start with one item
+    
+    if (this.saleId) {
+      this.loadSaleData(this.saleId);
+    } else {
+      this.addItem(); // Start with one item only for new sales
+    }
+  }
+
+  loadSaleData(id: number): void {
+    this.saleService.getSale(id).subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          const sale = response.data;
+          this.saleForm.patchValue({
+            cliente_id: sale.cliente?.id || null,
+            direccion_envio: sale.direccion_envio || '',
+            notas: sale.notas || '',
+            estado: sale.estado
+          });
+
+          // Clear items array and load existing items
+          while (this.items.length) {
+            this.items.removeAt(0);
+          }
+
+          sale.items?.forEach(item => {
+            const product = this.products().find(p => p.nombre === item.producto_nombre);
+            const itemForm = this.fb.group({
+              producto_id: [product?.id || null, Validators.required],
+              cantidad: [item.cantidad, [Validators.required, Validators.min(1)]],
+              precio_unitario: [item.precio_unitario, [Validators.required, Validators.min(0)]],
+              stock_max: [product?.lleva_inventario ? product.stock_actual + item.cantidad : 999999]
+            });
+            this.items.push(itemForm);
+          });
+        }
+      },
+      error: () => this.errorMessage.set('Error al cargar los datos del pedido')
+    });
   }
 
   get items() {
@@ -118,7 +158,11 @@ export class SaleFormComponent implements OnInit {
 
     const formData = this.saleForm.value;
     
-    this.saleService.createSale(formData).subscribe({
+    const request = this.saleId 
+      ? this.saleService.updateSale(this.saleId, formData)
+      : this.saleService.createSale(formData);
+
+    request.subscribe({
       next: (response) => {
         if (response.status === 200) {
           this.closed.emit(true);

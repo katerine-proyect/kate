@@ -1,0 +1,25 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- House Roof and Chimney -->
+  <path d="M200 60L40 180V320H360V180L200 60Z" fill="#3498db" fill-opacity="0.05"/>
+  <path d="M200 60L40 180M200 60L360 180" stroke="#3498db" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M280 130V80H315V155" stroke="#3498db" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Crossed Tools -->
+  <!-- Mop -->
+  <g transform="translate(140, 240) rotate(-45)">
+    <rect x="-2" y="-100" width="10" height="180" rx="5" fill="#7f8c8d"/>
+    <path d="M-25 80C-25 60 30 60 30 80L25 100H-20L-25 80Z" fill="#3498db"/>
+  </g>
+  <!-- Broom/Brush -->
+  <g transform="translate(260, 240) rotate(45)">
+    <rect x="-8" y="-100" width="10" height="180" rx="5" fill="#7f8c8d"/>
+    <rect x="-40" y="80" width="80" height="30" rx="5" fill="#f1c40f"/>
+    <path d="M-35 110L-33 130M-15 110L-13 130M5 110L7 130M25 110L27 130" stroke="#f1c40f" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- Sparkles -->
+  <path d="M100 130L105 115L110 130L125 135L110 140L105 155L100 140L85 135L100 130Z" fill="#3498db"/>
+  <path d="M300 200L303 190L306 200L316 203L306 206L303 216L300 206L290 203L300 200Z" fill="#3498db"/>
+  <circle cx="60" cy="220" r="6" fill="#3498db"/>
+  <circle cx="340" cy="120" r="4" fill="#3498db"/>
+</svg>

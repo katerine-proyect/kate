@@ -1,4 +1,6 @@
+import { secrets } from './secrets';
+
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:1998'
+  apiBaseUrl: secrets.apiBaseUrl || 'http://localhost:1998'
 };

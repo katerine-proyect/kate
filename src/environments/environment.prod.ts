@@ -1,4 +1,6 @@
+import { secrets } from './secrets';
+
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://zaidin.onrender.com'
+  apiBaseUrl: secrets.apiBaseUrlProd || 'https://zaidin.onrender.com'
 };

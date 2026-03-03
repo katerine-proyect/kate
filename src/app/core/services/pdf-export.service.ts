@@ -14,33 +14,45 @@ export class PdfExportService {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
 
-    // Header
-    doc.setFontSize(22);
+    // Header with Logo
+    const logoUrl = 'logo-casa-ideal.png';
+    doc.addImage(logoUrl, 'PNG', 14, 10, 25, 25);
+    
+    doc.setFontSize(18);
     doc.setTextColor(40, 40, 40);
-    doc.text('KATE - FACTURA', 14, 22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Distribuidora casa ideal', 42, 18);
     
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text(`Fecha: ${formatDate(new Date(), 'dd/MM/yyyy HH:mm', 'en-US')}`, pageWidth - 14, 22, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text('NIT: 1143444437', 42, 24);
+    
+    doc.text(`Fecha: ${formatDate(new Date(), 'dd/MM/yyyy HH:mm', 'en-US')}`, pageWidth - 14, 18, { align: 'right' });
 
     // Divider
     doc.setDrawColor(230, 230, 230);
-    doc.line(14, 28, pageWidth - 14, 28);
+    doc.line(14, 38, pageWidth - 14, 38);
 
     // Order Info
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Pedido: #${order.numero_pedido}`, 14, 40);
+    doc.text(`Pedido: #${order.numero_pedido}`, 14, 48);
     
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    var cliente_nombre = order!.cliente!.nombre ? order!.cliente!.nombre! : 'Venta Directa';
-    doc.text(`Cliente: ${cliente_nombre}`, 14, 48);
-    if (order?.direccion_envio) {
-      doc.text(`Dirección: ${order.direccion_envio}`, 14, 54);
+    var cliente_nombre = "";
+    if (order.cliente) {
+      cliente_nombre = order.cliente.nombre + " " + order.cliente.apellido;
+    } else {
+      cliente_nombre = "Venta Directa";
     }
-    doc.text(`Vendedor: ${order?.vendedor ? order.vendedor : 'Sistema'}`, 14, 60);
+    doc.text(`Cliente: ${cliente_nombre}`, 14, 56);
+    if (order?.direccion_envio) {
+      doc.text(`Dirección: ${order.direccion_envio}`, 14, 62);
+    }
+    doc.text(`Vendedor: ${order?.vendedor ? order.vendedor : 'Sistema'}`, 14, 68);
 
     // Table
     const tableData = (order.items || []).map(item => [
@@ -51,7 +63,7 @@ export class PdfExportService {
     ]);
 
     autoTable(doc, {
-      startY: 70,
+      startY: 75,
       head: [['Producto', 'Cantidad', 'Precio Unit.', 'Subtotal']],
       body: tableData,
       theme: 'striped',

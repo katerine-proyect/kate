@@ -19,7 +19,7 @@ import { PdfExportService } from '../../../core/services/pdf-export.service';
 export class SalesDashboardComponent implements OnInit {
   private saleService = inject(SaleService);
   private pdfService = inject(PdfExportService);
-  
+
   recentSales = signal<Order[]>([]);
   currentPage = signal(1);
   pageSize = signal(10);
@@ -28,9 +28,9 @@ export class SalesDashboardComponent implements OnInit {
   stats = signal({
     total_ventas: 0,
     pedidos_hoy: 0,
-    clientes_activos: 0
+    clientes_activos: 0,
   });
-  
+
   isLoading = signal(false);
   showSaleForm = signal(false);
   errorMessage = signal<string | null>(null);
@@ -42,7 +42,7 @@ export class SalesDashboardComponent implements OnInit {
 
   loadDashboardData(): void {
     this.isLoading.set(true);
-    
+
     // Fetch paginated Sales
     this.loadSales();
 
@@ -53,7 +53,7 @@ export class SalesDashboardComponent implements OnInit {
           this.stats.set(response.data);
         }
       },
-      error: () => this.handleError()
+      error: () => this.handleError(),
     });
   }
 
@@ -75,24 +75,24 @@ export class SalesDashboardComponent implements OnInit {
     }
   }
 
-  downloadPDF(sale: Order): void {
+  async downloadPDF(sale: Order): Promise<void> {
     if (!sale.items) {
       // If items not loaded, fetch detail
       this.isLoading.set(true);
       this.saleService.getSale(sale.id!).subscribe({
-        next: (response) => {
+        next: async (response) => {
           if (response.status === 200) {
-            this.pdfService.exportOrderInvoice(response.data);
+            await this.pdfService.exportOrderInvoice(response.data);
           }
           this.isLoading.set(false);
         },
         error: () => {
           this.errorMessage.set('Error al cargar detalle para PDF');
           this.isLoading.set(false);
-        }
+        },
       });
     } else {
-      this.pdfService.exportOrderInvoice(sale);
+      await this.pdfService.exportOrderInvoice(sale);
     }
   }
 
@@ -106,20 +106,20 @@ export class SalesDashboardComponent implements OnInit {
         }
         this.isLoading.set(false);
       },
-      error: () => this.handleError()
+      error: () => this.handleError(),
     });
   }
 
   nextPage(): void {
     if (this.paginationInfo()?.has_next) {
-      this.currentPage.update(p => p + 1);
+      this.currentPage.update((p) => p + 1);
       this.loadSales();
     }
   }
 
   previousPage(): void {
     if (this.paginationInfo()?.has_previous) {
-      this.currentPage.update(p => p - 1);
+      this.currentPage.update((p) => p - 1);
       this.loadSales();
     }
   }

@@ -38,6 +38,7 @@ export class App {
     { label: 'Categorías', route: '/categories' },
     { label: 'Ventas', route: '/sales' },
     { label: 'Clientes', route: '/clients' },
+    { label: 'Cortes', route: '/cortes' },
     { label: 'Usuarios', route: '/users' },
   ];
 }

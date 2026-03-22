@@ -1,0 +1,266 @@
+<div class="p-6 space-y-6">
+  <!-- Encabezado -->
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Cortes de Cartera</h1>
+    @if (datosCortes()) {
+      <button
+        (click)="exportarExcel()"
+        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Exportar a Excel
+      </button>
+    }
+  </div>
+
+  <!-- Filtros -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Fecha Inicio -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Fecha Inicio
+        </label>
+        <input
+          type="date"
+          [ngModel]="fechaInicio()"
+          (ngModelChange)="fechaInicio.set($event)"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <!-- Fecha Fin -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Fecha Fin
+        </label>
+        <input
+          type="date"
+          [ngModel]="fechaFin()"
+          (ngModelChange)="fechaFin.set($event)"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <!-- Cliente -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Cliente
+        </label>
+        <select
+          [ngModel]="clienteSeleccionado()"
+          (ngModelChange)="clienteSeleccionado.set($event ? +$event : null)"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option [ngValue]="null">Todos los clientes</option>
+          @for (cliente of clientes(); track cliente.id) {
+            <option [ngValue]="cliente.id">{{ cliente.nombre_local }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex items-end gap-2">
+        <button
+          (click)="cargarCortes()"
+          [disabled]="cargando()"
+          class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          @if (cargando()) {
+            <span class="flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Cargando...
+            </span>
+          } @else {
+            Buscar
+          }
+        </button>
+        <button
+          (click)="limpiarFiltros()"
+          class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="mt-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg">
+        <p class="text-red-700 dark:text-red-400 text-sm">{{ error() }}</p>
+      </div>
+    }
+  </div>
+
+  <!-- Contadores -->
+  @if (datosCortes()) {
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Total Pedidos -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Pedidos</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ totalPedidos() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productos Comprados -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Productos</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ cantidadProductos() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Pagado -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Pagado</p>
+            <p class="text-2xl font-bold text-green-600 dark:text-green-400">${{ totalPagado() | number:'1.2-2' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total No Pagado -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
+            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">No Pagado</p>
+            <p class="text-2xl font-bold text-red-600 dark:text-red-400">${{ totalNoPagado() | number:'1.2-2' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Gráfico -->
+  @if (datosCortes() && pedidos().length > 0) {
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Pedidos por Fecha</h2>
+      <div class="h-64">
+        <canvas #chartCanvas id="chartCanvas"></canvas>
+      </div>
+    </div>
+  }
+
+  <!-- Tabla de Pedidos -->
+  @if (datosCortes() && pedidos().length > 0) {
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Detalle de Pedidos</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          {{ getLabelCliente() }} | {{ fechaInicio() }} al {{ fechaFin() }}
+        </p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Número
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Cliente
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Vendedor
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Total
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Estado
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Fecha
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            @for (pedido of pedidos(); track pedido.id) {
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                  {{ pedido.numero_pedido }}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                  {{ pedido.cliente?.nombre ?? 'Venta Directa' }}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                  {{ pedido.vendedor }}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                  ${{ pedido.total }}
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  <span 
+                    class="px-2 py-1 rounded-full text-xs font-medium"
+                    [class.bg-green-100]="pedido.estado === 'Entregado'"
+                    [class.text-green-800]="pedido.estado === 'Entregado'"
+                    [class.dark:bg-green-900]="pedido.estado === 'Entregado'"
+                    [class.dark:text-green-300]="pedido.estado === 'Entregado'"
+                    [class.bg-yellow-100]="pedido.estado === 'Pendiente' || pedido.estado === 'Confirmado' || pedido.estado === 'En Preparación'"
+                    [class.text-yellow-800]="pedido.estado === 'Pendiente' || pedido.estado === 'Confirmado' || pedido.estado === 'En Preparación'"
+                    [class.dark:bg-yellow-900]="pedido.estado === 'Pendiente' || pedido.estado === 'Confirmado' || pedido.estado === 'En Preparación'"
+                    [class.dark:text-yellow-300]="pedido.estado === 'Pendiente' || pedido.estado === 'Confirmado' || pedido.estado === 'En Preparación'"
+                    [class.bg-blue-100]="pedido.estado === 'En Camino'"
+                    [class.text-blue-800]="pedido.estado === 'En Camino'"
+                    [class.dark:bg-blue-900]="pedido.estado === 'En Camino'"
+                    [class.dark:text-blue-300]="pedido.estado === 'En Camino'"
+                    [class.bg-red-100]="pedido.estado === 'Cancelado'"
+                    [class.text-red-800]="pedido.estado === 'Cancelado'"
+                    [class.dark:bg-red-900]="pedido.estado === 'Cancelado'"
+                    [class.dark:text-red-300]="pedido.estado === 'Cancelado'"
+                  >
+                    {{ pedido.estado }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                  {{ pedido.fecha_creacion | date:'dd/MM/yyyy HH:mm' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- Sin resultados -->
+  @if (datosCortes() && pedidos().length === 0) {
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
+      <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <p class="mt-4 text-gray-500 dark:text-gray-400">No se encontraron pedidos en el rango de fechas seleccionado.</p>
+    </div>
+  }
+</div>

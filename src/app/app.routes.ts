@@ -5,6 +5,7 @@ import { SalesDashboardComponent } from './features/sales/sales-dashboard/sales-
 import { ClientsListComponent } from './features/clients/clients-list/clients-list.component';
 import { UsersListComponent } from './features/users/users-list/users-list.component';
 import { CategoriesListComponent } from './features/categories/categories-list/categories-list.component';
+import { CortesCarteraComponent } from './features/reports/cortes-cartera/cortes-cartera.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -35,6 +36,11 @@ export const routes: Routes = [
   {
     path: 'categories',
     component: CategoriesListComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'cortes',
+    component: CortesCarteraComponent,
     canActivate: [authGuard],
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
